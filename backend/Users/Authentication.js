@@ -131,97 +131,6 @@ router.post('/login', limiter, async (req, res) => {
 
 
 
-  router.post('/register', async (req, res) => {
-    const { firstName, middleName, lastName, phone, email, password } = req.body;
-  
-    if (!firstName || !lastName || !email || !password) {
-        return res.status(400).json({ error: 'All fields are required' });
-    }
-  
-    try {
-        const hashedPassword = await bcryptjs.hash(password, 10);
-        const sql = `INSERT INTO ${directoryName} (firstName, lastName, email, password, verified) VALUES (?, ?, ?, ?, ?)`;
-        const result = await db.insertQuery(sql, [firstName, lastName, email, hashedPassword, false]); // Set verified to false
-  
-        const option = {
-          from: 'E-commerce',
-          to: req.body.email,
-          subject: 'Verify',
-          html: `<!DOCTYPE html>
-                  <html lang="en">
-                  <head>
-                  <meta charset="UTF-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>Verify Email</title>
-                <style>
-                   body {
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      height: 100vh;
-                      background-color: #f0f0f0;
-                      font-family: Arial, sans-serif;
-                  } 
-                 .card {
-                     background: white;
-                     border-radius: 10px;
-                     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                     padding: 30px;
-                     width: 350px;
-                     text-align: left;
-                     padding: 2em 0;
-                  }
-                 h2 {
-                    color: #61d2ff; /* Festival color */
-                    margin-bottom: 10px;
-                 }
-                 .greeting {
-                    font-size: 18px;
-                    color: #4a4a4a;
-                    margin-bottom: 20px;
-                    font-weight: 600;
-                }
-                p {
-                   color: #555;
-                   margin-bottom: 20px;
-                  }
-                .verify-btn {
-                  background: linear-gradient(45deg, #40b9ff, #406dff); /* Festive gradient */
-                  color: white;
-                  border: none;
-                  border-radius: 5px;
-                  padding: 12px 20px;
-                  cursor: pointer;
-                  font-weight: bold;
-                  transition: background 0.3s;
-                  width: 50%;
-                }
-              .verify-btn:hover {
-                opacity: 0.9;
-                }
-            </style>
-                  </head>
-                  <body>
-                    <div class="card">
-                      <div class="greeting">Hello ${firstName}!</div>
-                      <h2>Verify Your Email</h2>
-                      <p>Please click the button below to activate your account.</p>
-                      <a class="verify-btn" href="${process.env.SERVER_URL}/auth/verify/${result.insertId}">Verify Email</a>
-                    </div>
-                  </body>
-                  </html>`,
-        };
-  
-        mailUser(option, req, res);
-        res.status(201).json({ user: req.body });
-    } catch (error) {
-        console.error('Error registering User:', error);
-        res.status(500).json({ error: 'Failed to register User' });
-    }
-  });
-  
-
-
 
   router.post('/register', async (req, res) => {
     const { firstName, middleName, lastName, phone, email, password } = req.body;
@@ -235,7 +144,7 @@ router.post('/login', limiter, async (req, res) => {
         const sql = `INSERT INTO ${directoryName} (firstName, lastName, email, password, verified) VALUES (?, ?, ?, ?, ?)`;
         const result = await db.insertQuery(sql, [firstName, lastName, email, hashedPassword, false]); 
 
-        const userId = result.insertId; 
+        const userId = result.id; 
 
         const option = {
             from: 'E-commerce',
@@ -281,7 +190,7 @@ router.post('/login', limiter, async (req, res) => {
                         }
                         .verify-btn {
                             background: linear-gradient(45deg, #40b9ff, #406dff);
-                            color: white;
+                            color: white !important;
                             border: none;
                             border-radius: 5px;
                             padding: 12px 20px;
@@ -289,6 +198,7 @@ router.post('/login', limiter, async (req, res) => {
                             font-weight: bold;
                             transition: background 0.3s;
                             width: 50%;
+                            text-decoration:none;
                         }
                         .verify-btn:hover {
                             opacity: 0.9;
@@ -300,28 +210,8 @@ router.post('/login', limiter, async (req, res) => {
                         <div class="greeting">Hello ${firstName}!</div>
                         <h2>Verify Your Email</h2>
                         <p>Please click the button to verify your account.</p>
-                        <button class="verify-btn" onclick="verifyEmail()">Verify Email</button>
+                        <a class="verify-btn" href=${process.env.CLIENT_URL}verify?email=${email}&id=${userId}>Verify Email</a>
                     </div>
-                    <script>
-                        function verifyEmail() {
-                            fetch('${process.env.SERVER_URL}/api/auth/update-profile/${userId}', {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ verified: 1 }),
-                            })
-                            .then((response) => {
-                                if (!response.ok) {
-                                    console.log("Something went wrong");
-                                    return; // Exit if response is not ok
-                                }
-                                return response.json(); 
-                            })
-                            .then((res) => console.log(res)) 
-                            .catch((err) => console.log(err)); 
-                        }
-                    </script>
                  </body>
                  </html>`,
         }

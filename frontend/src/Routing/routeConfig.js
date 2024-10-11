@@ -30,6 +30,7 @@ const LazyLandingPage = React.lazy(() => import("../Authenticate/Landing"));
 const LazyHelp = React.lazy(() => import("../E-Component/Help"))
 const LazyNotification = React.lazy(() => import("../E-Component/Notification"))
 const LazyOrderStatus = React.lazy(() => import('../E-Component/OrderStatus'))
+const LazyVerify = React.lazy(() => import('../E-Component/VerifyEmail'))
 
 
 
@@ -57,6 +58,7 @@ export const routeConfig = [
             <LazyShop/>
        )
       },
+
       {
         path:"feature",
         icons: faGauge,
@@ -92,6 +94,12 @@ export const routeConfig = [
     path: "/reset-password",
     element: <LazyReset />,
   },
+  {
+    path:"/verify",
+    element : (
+         <LazyVerify/>
+    )
+   },
 
   {
     path: "/home",

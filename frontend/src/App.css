@@ -2263,3 +2263,54 @@
   border-radius:10px;
 }
 
+
+.container-verify {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: #61d2ff;
+  margin-bottom: 10px;
+}
+
+.greeting {
+  font-size: 18px;
+  color: #4a4a4a;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.verify-btn {
+  background: linear-gradient(45deg, #40b9ff, #406dff);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+  width: 50%;
+}
+
+.verify-btn:hover {
+  opacity: 0.9;
+}
+
+
