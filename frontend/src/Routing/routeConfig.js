@@ -94,12 +94,7 @@ export const routeConfig = [
     path: "/reset-password",
     element: <LazyReset />,
   },
-  {
-    path:"/verify",
-    element : (
-         <LazyVerify/>
-    )
-   },
+
 
   {
     path: "/home",
@@ -163,6 +158,13 @@ export const routeConfig = [
       },
     ],
   },
+
+  {
+    path:"/verify",
+    element : (
+         <LazyVerify/>
+    )
+   },
 
   {
     path: "*",

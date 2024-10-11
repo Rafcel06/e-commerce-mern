@@ -42,7 +42,7 @@ const Ordertracking = () => {
     getBarangay,
     getAddress,
     getOrders,
-    createFormData
+    createFormData,
   } = useQueryHooks(environtment.api + "order/" + "all-orders/" + session.id);
 
   const openForm = () => {
@@ -67,37 +67,43 @@ const Ordertracking = () => {
   };
 
   const submit = (data) => {
-    // const dataReviews = {
-    //   ...data,
-    //   user_id: session.id,
-    //   product_id: selectedProduct,
-    // };
+    console.log(data);
 
+    const formData = new FormData();
+    formData.append("user_id", session.id);
+    formData.append("product_id", selectedProduct);
+    formData.append("comment", data.comment);
+    formData.append("files", data.files[0]);
 
-    const formData = new FormData()
-          formData.append('user_id',session.id)
-          formData.append('product_id',selectedProduct)
-          formData.append('comment', data.comment)
-          formData.append('files', data.files[0])
-          
-          if (data.files && data.files.length > 0) {
-            for (let i = 0; i < data.files.length; i++) {
-              formData.append('files', data.files[i]);
-            }
+    if (data.files && data.files.length > 0) {
+      for (let i = 0; i < data.files.length; i++) {
+        formData.append("files", data.files[i]);
+      }
 
-            createFormData(environtment.api + 'review/' + "create-reviews", formData)
-            .then((response) =>  {
-              console.log(response)
-              setSelectedProduct(null)
-            })
-            .catch((err) => {
-               console.log(err)
-               setSelectedProduct(null)
-          })
-          }
+      createFormData(environtment.api + "review/" + "create-reviews", formData)
+        .then((response) => {
+          console.log(response);
+          setSelectedProduct(null);
+        })
+        .catch((err) => {
+          console.log(err);
+          setSelectedProduct(null);
+        });
+      return;
+    }
 
-   return
+      createFormData(environtment.api + "review/" + "create-reviews", formData)
+        .then((response) => {
+          console.log(response);
+          setSelectedProduct(null);
+        })
+        .catch((err) => {
+          console.log(err);
+          setSelectedProduct(null);
+        });
 
+      return;
+ 
   };
 
   const handleFileChange = (event) => {
@@ -139,7 +145,6 @@ const Ordertracking = () => {
                 flexDirection: "column",
                 rowGap: "1em",
                 paddingTop: "5em",
-                
               }}
             >
               {data?.map((mapped, index) => (
@@ -312,7 +317,6 @@ const Ordertracking = () => {
                           {...register("comment", {
                             required: {
                               value: true,
-                              message: "*Password is required",
                             },
                           })}
                         />
