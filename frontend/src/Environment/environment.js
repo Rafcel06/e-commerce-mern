@@ -3,5 +3,4 @@ export const environtment = {
     address : 'https://psgc.cloud/api/',
 //    api : 'http://d2d.ipasuyo.com/api/'  // Production
 
-    
 }

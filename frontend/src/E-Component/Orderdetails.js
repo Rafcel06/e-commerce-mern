@@ -3,7 +3,12 @@ import {
   faStar,
   faMagnifyingGlass,
   faArrowLeft,
+  faCartShopping,
+  faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useQueryHooks from "../Api/useQueryHook";
 import { environtment } from "../Environment/environment";
@@ -14,7 +19,10 @@ import useModal from "../Api/useModal";
 
 import useDialog from "../Api/useDialog";
 import { NO_ADDRESS, NO_ADDRESS_FOUND } from "../Utils/constant";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
+import { routeConfig } from "../Routing/routeConfig";
+import { useAuth } from "../AuthGuard/Auth";
+import EscapeNavigate from "./EscapeNavigate";
 
 
 const Initialize = {
@@ -40,9 +48,10 @@ const reducer = (state, action) => {
   }
 };
 
-const Orderdetails = ({ setOrder, order,setProductDetails }) => {
+const Orderdetails = ({setOrder, order, productDetails, setProductDetails,setMobileUI,goToLanding}) => {
 
   const [addressOn, setAddressOn] = useState();
+  const { user, login, logout } = useAuth();
   const [activeAddress, setActiveAddress] = useState(false);
   const [userAddress, setUserAddress] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -56,9 +65,15 @@ const Orderdetails = ({ setOrder, order,setProductDetails }) => {
   const [selectedPayment, setSelectedPayment] = useState("cash_on");
   
 
+  const [anchorEl, setAnchorEl] = useState(null);
 
-
-
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
 
   const {
@@ -76,10 +91,6 @@ const Orderdetails = ({ setOrder, order,setProductDetails }) => {
     getAddress,
   } = useQueryHooks(environtment.api, submitedForm)
 
- 
-
-
-  
  
 
   const authenticatedUser = JSON.parse(secureLocalStorage.getItem("authenticate"));
@@ -152,7 +163,7 @@ const Orderdetails = ({ setOrder, order,setProductDetails }) => {
     updateData(environtment.api + "product/" + "update-product/" + product_update ,{stock_quantity: order.quantity})
     .then((res) => { 
        setOrder({ order: false });
-
+       setProductDetails(false)
        if(order?.productId?.cart_id) {
          deleteData(environtment.api + "cart/" + "delete-cart/" + order.productId.cart_id)
           .then((response) =>  {
@@ -232,16 +243,111 @@ const Orderdetails = ({ setOrder, order,setProductDetails }) => {
 
   };
 
+  
+  const goCart = () => {
+    setProductDetails(false)
+    navigate('/')
+
+ }
+
+
+
+  const closeFlow = (route) => {
+
+    if(!route == "") {
+      setProductDetails(false)
+      setMobileUI(true)
+  
+      return
+    }
+
+     setProductDetails(false)
+     setMobileUI(false)
+
+ }
+
+
+ const goToLogin = () => {
+  secureLocalStorage.clear();
+  logout();
+  navigate("/home");
+};
+
+
 
   return (
     <>
-      <div className="product-escape">
+      {/* <div className="product-escape">
         <FontAwesomeIcon
           icon={faArrowLeft}
           className="product-detail-back"
           onClick={goToDetail}
+          
         />
-      </div>
+            <div className="shop-and-navigation">
+           <Link to="Shop" className="page-navigation" 
+           onClick={goCart}
+           >
+            
+             <FontAwesomeIcon
+               icon={faCartShopping}
+               className="product-detail-back"
+            />
+            </Link>
+
+
+            <Button
+              id="basic-button"
+
+              aria-controls={open ? 'basic-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick} >
+              <FontAwesomeIcon
+              icon={faEllipsisVertical}
+              className="product-detail-back"
+            />
+            </Button>
+
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+           >
+              {routeConfig[3].children?.map((route, index) =>
+              !route.parentnavigation ? (
+                !route?.subnavigation ? (
+                  <Link
+                    key={index}
+                    to={route?.path}
+                    className="page-navigation"
+                    style={{textTransform:'capitalize',marginLeft:'0.3em'}}
+                    onClick={closeFlow}
+                  >
+
+                    {route?.path || "featured"}
+                  </Link>
+                ) : null
+              ) : (
+                <div key={index}>
+                  <Link to={route.path} className="page-navigation" onClick={closeFlow} 
+                    style={{textTransform:'capitalize',marginLeft:'0.3em'}}>  
+                    {route?.path}
+                  </Link>
+                </div>
+              )
+            )}
+             <MenuItem onClick={goToLogin}>Logout</MenuItem>
+           </Menu>
+
+            </div>
+      </div> */}
+
+   <EscapeNavigate goToLanding={goToLanding} productDetails={productDetails} goToDetail={goToDetail} goCart={goCart} goToLogin={goToLogin} closeFlow={closeFlow} order={order} setOrder={setOrder} setMobileUI={setMobileUI} /> 
       <div id="order-detail-container">
 
         <div className="order-detail-contain" >

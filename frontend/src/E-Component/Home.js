@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
@@ -10,19 +10,17 @@ import { routeConfig } from "../Routing/routeConfig";
 import { Link, useOutletContext } from "react-router-dom";
 import secureLocalStorage from "react-secure-storage";
 import { useNavigate, Outlet } from "react-router-dom";
-import Featured from "./Featured";
 import Productdetails from "./Productdetails";
 
 const Home = () => {
   const { user, login, logout } = useAuth();
   const [productDetails ,setProductDetails] = useState(false)
   const [productId,setProductId] = useState()
+  const [mobileUI,setMobileUI] = useState(false)
   const navigate = useNavigate();
 
 
-
-
-
+ 
   const goToLogin = () => {
     secureLocalStorage.clear();
     logout();
@@ -34,6 +32,10 @@ const Home = () => {
   const goToProduct = (product) => {
     setProductDetails(true)
     setProductId(product)
+    if(window.screen.availWidth <= 720) {
+       setMobileUI(true)
+       return
+    }
 }
 
 const closeFlow = () => {
@@ -66,7 +68,7 @@ const closeFlow = () => {
                 ) : null
               ) : (
                 <div key={index}>
-                  <Link to={route.path} className="page-navigation"     onClick={closeFlow} >
+                  <Link to={route.path} className="page-navigation"  onClick={closeFlow} >
                     <FontAwesomeIcon
                       icon={route?.icons}
                       className="navigation-icons"
@@ -87,8 +89,8 @@ const closeFlow = () => {
             </div>
           </ul>
         </nav>
-        <Search goToCart={setProductDetails}/>
-        {  productDetails ?  <Productdetails productId={productId} setProductDetails={setProductDetails}/> :  <Outlet context={{goToProduct:goToProduct,setProductDetails : setProductDetails}}/> }
+        {  mobileUI  ? null : <Search goToCart={setProductDetails} setMobileUI={setMobileUI} mobileUI={mobileUI}/>} 
+        {  productDetails ?  <Productdetails productId={productId}  productDetails={productDetails} setProductDetails={setProductDetails} setMobileUI={setMobileUI} /> :  <Outlet context={{goToProduct:goToProduct,setProductDetails : setProductDetails,  setMobileUI:setMobileUI, productId: productId, productDetails:productDetails,mobileUI:mobileUI}}/> }
       </div>
       <Footer />
     </>

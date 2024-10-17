@@ -3,9 +3,15 @@ import logo from "../Assets/product-1.jpg";
 import {
   faStar,
   faArrowLeft,
-  faPersonWalkingDashedLineArrowRight,
+  faCartShopping,
+  faEllipsisVertical,
+  faUserPlus,
+  faRightToBracket
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import useQueryHooks from "../Api/useQueryHook";
 import { environtment } from "../Environment/environment";
 import secureLocalStorage from "react-secure-storage";
@@ -14,8 +20,15 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import Orderdetails from "./Orderdetails";
 import { ADD_CART, CONFIRMATION } from "../Utils/constant";
+import { Link } from "react-router-dom";
+import { routeConfig } from "../Routing/routeConfig";
+import { useAuth } from "../AuthGuard/Auth";
+import EscapeNavigate from "./EscapeNavigate";
+import { Alert } from "@mui/material";
 
-const Productdetails = ({ productId, setProductDetails, Dispatch }) => {
+
+const Productdetails = ({  loginState,productId, productDetails, setProductDetails, Dispatch ,setMobileUI}) => {
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
   const [submitedForm, setSubmitedForm] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -34,13 +47,25 @@ const Productdetails = ({ productId, setProductDetails, Dispatch }) => {
     environtment.api + "review/" + "all-reviews/" + productId.id,
     submitedForm,
     cartCount
+    
   );
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+
   useEffect(() => {
+
     getImageReviews(environtment.api + "review/" + "image-reviews")
       .then((response) => {
         setImagesReviews(response?.data?.reviews);
-        console.log(response?.data?.reviews)
       })
       .catch((err) => {
         console.log(err);
@@ -58,14 +83,30 @@ const Productdetails = ({ productId, setProductDetails, Dispatch }) => {
     secureLocalStorage.getItem("authenticate")
   );
 
-  const goToLanding = () => {
+  const goToLanding = (route,setOrder,order) => {
+  
+    
+//     if(!route === '') {
+//       setMobileUI(true)
+//       return
+// }
+
+    if(order) {
+       setOrder({order:false})
+       return
+    }
+
+
     setProductDetails(false);
+    setMobileUI(false)
+    
+
+
   };
 
   const openForm = () => {
     if (authenticatedUser != null) {
       setOrder({ order: true, productId, quantity: count });
-      console.log("Authenticated !!!");
       return;
     }
 
@@ -117,6 +158,54 @@ const Productdetails = ({ productId, setProductDetails, Dispatch }) => {
       .catch((err) => console.log(err));
   };
 
+
+  const goCart = () => {
+    setProductDetails(false)
+    navigate('/home')
+ }
+
+
+ const closeFlow = (route) => {
+
+
+          if (route === 'feature') {
+          setMobileUI(false)
+          setProductDetails(false)
+          return;
+        }
+
+
+  setProductDetails(false)
+  setMobileUI(true)
+  productId= "";
+}
+
+
+const OpenLogin = () => {
+  Dispatch();
+  loginState({type:"LOGIN"})
+  handleClose()
+  return
+}
+
+const OpenRegister = () => {
+
+  Dispatch()
+  loginState({type:"REGISTER"})
+  handleClose()
+  return
+}
+
+
+const goToLogin = () => {
+  secureLocalStorage.clear();
+  logout();
+  navigate("/home");
+};
+
+
+ 
+
   return (
     <>
       {order.order ? (
@@ -124,16 +213,109 @@ const Productdetails = ({ productId, setProductDetails, Dispatch }) => {
           setOrder={setOrder}
           order={order}
           setProductDetails={setProductDetails}
+          Dispatch={Dispatch}
+          loginState={loginState}
+          setMobileUI={setMobileUI}
+          goToLanding={goToLanding}
+          productDetails={productDetails}
+       
         />
       ) : (
         <>
-          <div className="product-escape">
+        <EscapeNavigate goToLanding={goToLanding}  goCart={goCart} closeFlow={closeFlow} goToLogin={goToLogin} OpenLogin={OpenLogin} OpenRegister={OpenRegister} setMobileUI={setMobileUI} setProductDetails={setProductDetails} productId={productId}/>
+          {/* <div className="product-escape">
             <FontAwesomeIcon
               icon={faArrowLeft}
               className="product-detail-back"
               onClick={goToLanding}
             />
-          </div>
+            <div className="shop-and-navigation">
+           <Link to="Shop" className="page-navigation" 
+           onClick={goCart}
+           >
+            
+             <FontAwesomeIcon
+               icon={faCartShopping}
+               className="product-detail-back"
+            />
+            </Link>
+
+
+            <Button
+              id="basic-button"
+
+              aria-controls={open ? 'basic-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleClick} >
+              <FontAwesomeIcon
+              icon={faEllipsisVertical}
+              className="product-detail-back"
+            />
+            </Button>
+
+            { authenticatedUser ?  
+            
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+           >
+              {routeConfig[3].children?.map((route, index) =>
+              !route.parentnavigation ? (
+                !route?.subnavigation ? (
+                  <Link
+                    key={index}
+                    to={route?.path}
+                    className="page-navigation"
+                    style={{textTransform:'capitalize',marginLeft:'0.3em'}}
+                    onClick={goToLanding}
+                  >
+
+                    {route?.path || "featured"}
+                  </Link>
+                ) : null
+              ) : (
+                <div key={index}>
+                  <Link to={route.path} className="page-navigation"   onClick={closeFlow} 
+                  style={{textTransform:'capitalize',marginLeft:'0.3em'}}>
+                     
+                    {route?.path}
+                  </Link>
+                </div>
+              )
+            )}
+             <MenuItem onClick={goToLogin}>Logout</MenuItem>
+           </Menu> 
+            
+            : 
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+          'aria-labelledby': 'basic-button',
+            }}
+           >
+         
+            
+            {
+              routeConfig[0].children.map((mapped,index) => mapped.parentnavigation  ? <Link to={mapped.path} className="page-navigation" key={index}  style={{textTransform:'capitalize',marginLeft:'0.3em'}} onClick={closeFlow}>{mapped.path}</Link> : null)
+            }
+             <MenuItem onClick={OpenLogin}>Login</MenuItem>
+             <MenuItem onClick={OpenRegister}>Signup</MenuItem>
+             
+             
+           </Menu>
+            }
+
+            </div>
+          </div> */}
           <div id="product-detail-page">
             <div className="product-detail-card">
               <div className="product-detail-image">

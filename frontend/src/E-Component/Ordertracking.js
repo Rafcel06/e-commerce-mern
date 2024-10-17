@@ -8,11 +8,13 @@ import OrderStatus from "./OrderStatus";
 import { faStar, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useForm } from "react-hook-form";
+import EscapeNavigate from "./EscapeNavigate";
 
 const Ordertracking = () => {
   const context = useOutletContext();
   const navigate = useNavigate();
   const form = useForm();
+  const [mobileView,setMobileView] = useState(false)
   const { handleSubmit, formState, register } = form;
   const { errors } = formState;
   const [sendReviews, setSendReviews] = useState(false);
@@ -25,8 +27,10 @@ const Ordertracking = () => {
   const authenticatedUser = JSON.parse(
     secureLocalStorage.getItem("authenticate")
   );
-  const { Dispatch } = context;
+  const { Dispatch, setMobileUI, mobileUI } = context;
   const { session } = authenticatedUser;
+
+
 
   const {
     data,
@@ -44,6 +48,13 @@ const Ordertracking = () => {
     getOrders,
     createFormData,
   } = useQueryHooks(environtment.api + "order/" + "all-orders/" + session.id);
+
+  useEffect(() => {
+    if(window.screen.availWidth <= 720) {
+      setMobileView(true)
+      return
+   }
+  }, [])
 
   const openForm = () => {
     if (authenticatedUser != null) {
@@ -117,6 +128,8 @@ const Ordertracking = () => {
 
   return (
     <>
+    {mobileView ?  <EscapeNavigate setMobileUIRoute={setMobileUI} mobileUI={mobileUI}/> : null}
+
       {showStatus.status ? (
         <OrderStatus
           productId={{ showStatus: showStatus, setShowStatus: setShowStatus }}

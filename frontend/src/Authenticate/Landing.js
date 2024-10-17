@@ -84,6 +84,7 @@ const Landing = () => {
   const authenticatedUser = secureLocalStorage.getItem('authenticate')
 
 
+
   const {
     data,
     queryLoading,
@@ -138,6 +139,7 @@ const Landing = () => {
   const { errors } = formState;
   const [productDetails ,setProductDetails] = useState(false)
   const [productId,setProductId] = useState()
+  const [mobileUI,setMobileUI] = useState(false)
 
   const { Modal, openModal, closeModal, isOpen } = useModal();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -181,6 +183,11 @@ const Landing = () => {
   const goToProduct = (product) => {
       setProductDetails(true)
       setProductId(product)
+
+      if(window.screen.availWidth <= 720) {
+        setMobileUI(true)
+        return
+     }
   }
 
   const submit = (data, element, setMessage) => {
@@ -263,8 +270,6 @@ const Landing = () => {
   
 
 
-
-
   return (
     <>
       <div id="landing-page-container">
@@ -286,9 +291,9 @@ const Landing = () => {
           </ul>
         </nav>
 
-        <Search goToCart={setProductDetails} />
+        {mobileUI ? null : <Search goToCart={setProductDetails}/>} 
          {
-          productDetails ?  <Productdetails productId={productId} setProductDetails={setProductDetails} Dispatch={Dispatch}/> : <Outlet context={{goToProduct: goToProduct, Dispatch: Dispatch}} />
+          productDetails ?  <Productdetails productId={productId} setProductDetails={setProductDetails} Dispatch={Dispatch} loginState={dispatch} setMobileUI={setMobileUI}/> : <Outlet context={{goToProduct: goToProduct, Dispatch: Dispatch, setMobileUI: setMobileUI,mobileUI:mobileUI}} />
          }
         
       </div>

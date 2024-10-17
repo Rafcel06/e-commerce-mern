@@ -51,7 +51,7 @@ const OrderStatus = ({productId}) => {
             className="order-address-detail"
             style={{ padding: "1.5em", background: "#fff",paddingTop:'2em' }}
           >
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{ width: "100%" }} >
               <Stepper activeStep={steps.indexOf(showStatus.product.status)} alternativeLabel>
                 {steps.map((label) => (
                   <Step key={label}>

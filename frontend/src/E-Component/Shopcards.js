@@ -3,9 +3,15 @@ import secureLocalStorage from "react-secure-storage";
 import { environtment } from "../Environment/environment";
 import useQueryHooks from "../Api/useQueryHook";
 import Orderdetails from "./Orderdetails";
-import { useOutletContext } from "react-router-dom";
-import { faTrash} from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useOutletContext } from "react-router-dom";
+
+import {
+  faArrowLeft,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+
+
 
 const Shopcards = ({ cart }) => {
   const authenticatedUser = JSON.parse(
@@ -17,6 +23,9 @@ const Shopcards = ({ cart }) => {
   const [count, setCount] = useState([]);
   const [selected,setSelected] = useState([])
   const [productId,setProductId] = useState({})
+  const navigate = useNavigate()
+  const [hideBack,setHideBack] = useState(false)
+
   const [order,setOrder] = useState({
     order:false,
     productId : {},
@@ -41,7 +50,7 @@ const Shopcards = ({ cart }) => {
     getOrders,
   } = useQueryHooks(environtment.api + "cart/" + "all-cart/" + session.id, submitedForm);
 
-  const {setProductDetails} = context 
+  const {setProductDetails,setMobileUI} = context 
 
   useEffect(() => {
     if (data) {
@@ -93,8 +102,13 @@ const Shopcards = ({ cart }) => {
   
   const CheckOut = () => {
     const selectedCount = count[currentIndex] || 0;
-    setOrder({
+    setHideBack(true)
+    if(window.screen.availWidth <= 720) {
+      setMobileUI(true)
+   }
+    setOrder({ 
       order: true,
+      checkOut : true,
       productId: productId,
       quantity: selectedCount,
     });
@@ -117,13 +131,32 @@ const Shopcards = ({ cart }) => {
       })
       .catch((err) => console.log(err));
   };
+
+
+  const goToHome = () => {
+     navigate("/home")
+     setMobileUI(false)
+  }
   
   
 
 
   return (
- <>   
-   { order.order ? <Orderdetails setOrder={setOrder} order={order} setProductDetails={setProductDetails}/>  : 
+ <>  
+ {
+   hideBack ? 
+      null
+      :
+     <div className="product-escape" >
+      <FontAwesomeIcon
+        icon={faArrowLeft}
+        className="product-detail-back"
+        style={hideBack ? {display: "none"} : null}
+        onClick={goToHome}
+      />
+      </div>}
+
+   { order.order ? <Orderdetails setOrder={setOrder} order={order} setProductDetails={setProductDetails} setMobileUI={setMobileUI}  setHideBack={setHideBack}/>  : 
     <div
       id="order-personal-address"
       style={{

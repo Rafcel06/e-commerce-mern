@@ -33,13 +33,7 @@ const useQuery = (url, refreshData) => {
   };
 
   const updateData = (putUrl, updatedItem) => {
-    return axios.put(putUrl, updatedItem, {
-      headers: {
-        Authorization: `Bearer ${
-          JSON.parse(secureLocalStorage.getItem("authenticate")).token
-        }`,
-      },
-    });
+    return axios.put(putUrl, updatedItem)
   };
 
   const deleteData = (deleteUrl) => {
@@ -87,6 +81,9 @@ const useQuery = (url, refreshData) => {
     },
   })
  }
+
+
+
 
 
 

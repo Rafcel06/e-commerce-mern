@@ -13,13 +13,14 @@ import secureLocalStorage from 'react-secure-storage';
 
 
 
-  const Search = ({goToCart,Dispatch}) => {
+  const Search = ({goToCart,setMobileUI,mobileUI}) => {
 
 
 
 
     let authenticatedUser;
     let session;
+  
 
     
 
@@ -51,6 +52,11 @@ import secureLocalStorage from 'react-secure-storage';
 
      const navigate = useNavigate()
      const goCart = () => {
+
+    //   if(window.screen.availWidth <= 720) {
+    //     setMobileUI(true)
+    //  }
+
        goToCart(false)
        navigate('/')
     }
@@ -59,6 +65,9 @@ import secureLocalStorage from 'react-secure-storage';
 
   return (
     <>
+       {
+        mobileUI ? null : 
+       
        <div id="landing-page-search">
           <figure id="landing-page-logo-contain">
             <img src={Logo} id="landing-page-logo" />
@@ -100,6 +109,7 @@ import secureLocalStorage from 'react-secure-storage';
             </Link>
           </div>
         </div>
+  }
     </>
   )
 }

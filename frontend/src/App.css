@@ -443,16 +443,37 @@
   display: block;
 }
 
+.shop-and-navigation {
+  display: none;
+}
+
 
 
 @media screen and (max-width: 720px) {
+
+  .shop-and-navigation {
+    display: block;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+
+  }
+
+
+  .css-1e6y48t-MuiButtonBase-root-MuiButton-root {
+    min-width: 30px !important;
+    margin-left: 0.5em !important;
+  }
 
   #landing-page-container {
     height: auto;
     padding: var(--pageResetMargin);
 
   }
-  
+
+
 
   #landing-page-navigation-list {
     padding: 0;
@@ -463,6 +484,7 @@
     justify-content: center;
     align-items: flex-start;
     column-gap:1em;
+    display: none;
   }
 
 
@@ -472,11 +494,11 @@
 
   .page-navigation {
     display:flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     column-gap: 10px;
-    padding: 10px;
-    font-size: var(--extraFont);
+    padding: 10px 10px;
+
   
   }
 
@@ -538,6 +560,7 @@
     align-items: center;
     justify-content: center;
     column-gap: 0.2em;
+    padding-top: 0.5em;
   } 
 
   #page-search {
@@ -602,9 +625,11 @@
 .product-escape {
    height: 50px;
    display: flex;
-   justify-content: flex-start;
+   justify-content: space-between;
    align-items: center;
    margin: 0 2em;
+   width: 95%;
+   /* border: 1px solid #000; */
 }
 
 .product-detail-back {
@@ -886,7 +911,7 @@
   .product-escape {
     height: 50px;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin:0 10px;
  }
@@ -1501,8 +1526,9 @@
 .shop-container {
 
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
   min-height: 100vh;
   max-height: auto;
   width: auto;

@@ -42,7 +42,7 @@ router.put('/update-product/:id', async (req, res) => {
     const { stock_quantity } = req.body;
 
     if (stock_quantity === undefined) {
-        return res.status(400).json({ message: 'Active field is required' });
+        return res.status(400).json({ message: 'Quantity field is required' });
     }
 
     try {
